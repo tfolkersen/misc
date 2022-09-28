@@ -1,6 +1,13 @@
 import curses
 import random
 
+keys_qwerty = "`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./"
+keys_dvorak = "`1234567890[]',.pyfgcrl/=\\aoeuidhtns-;qjkxbmwvz"
+
+assert len(keys_qwerty) == len(keys_dvorak)
+
+kbmap = {keys_qwerty[i]: keys_dvorak[i] for i in range(len(keys_qwerty))}
+
 letters = "aoeuidhtns-"
 chunkSize = input("chunk size: ")
 if chunkSize == "":
@@ -39,7 +46,11 @@ def main(scr):
 
         while len(key) != 1:
             key = scr.getkey()
-            if (len(key) == 1 and ord(key) == 127):
+
+            if key in kbmap.keys():
+                key = kbmap[key]
+
+            if (key == "KEY_BACKSPACE") or (len(key) == 1 and ord(key) == 127):
                 line = line[0 : len(line) - 1]
                 key = ""
                 break
