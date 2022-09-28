@@ -8,8 +8,6 @@ assert len(keys_qwerty) == len(keys_dvorak)
 
 kbmap = {keys_qwerty[i]: keys_dvorak[i] for i in range(len(keys_qwerty))}
 
-letters = "aoeuidhtns-"
-
 
 def editBuffer(scr, string, swapLayout = False):
     key = scr.getkey()
