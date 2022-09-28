@@ -9,15 +9,27 @@ assert len(keys_qwerty) == len(keys_dvorak)
 kbmap = {keys_qwerty[i]: keys_dvorak[i] for i in range(len(keys_qwerty))}
 
 letters = "aoeuidhtns-"
-chunkSize = input("chunk size: ")
-if chunkSize == "":
-    chunkSize = 4
-else:
-    chunkSize = int(chunkSize)
 
-_letters = input("letters: ")
-if _letters != "":
-    letters = _letters
+
+def editBuffer(scr, string, swapLayout = False):
+    key = scr.getkey()
+
+    if swapLayout:
+        if key in kbmap.keys():
+            key = kbmap[key]
+
+    if (key == "KEY_BACKSPACE") or (len(key) == 1 and ord(key) == 127):
+        string = string[0 : len(string) - 1]
+        return [string, key]
+
+    if key == "\n":
+        return [string, key]
+
+    string += key
+
+    return [string, key]
+
+
 
 def getChunk(letters, size):
     chunk = ""
@@ -27,11 +39,40 @@ def getChunk(letters, size):
     return chunk
 
 def main(scr):
-    line = ""
-    chunk = getChunk(letters, chunkSize)
+    #Initialize colors
     #curses.init_pair(0, curses.COLOR_WHITE, curses.COLOR_BLACK)
     curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
+
+    #Get chunk size
+    chunkSize = ""
+    while True:
+        scr.clear()
+        scr.addstr("Chunk size: " + chunkSize)
+        scr.refresh()
+
+        chunkSize, key = editBuffer(scr, chunkSize, True)
+
+        if key == "\n":
+            chunkSize = int(chunkSize)
+            break
+
+    #Get letters
+    letters = ""
+    while True:
+        scr.clear()
+        scr.addstr("Letters: " + letters)
+        scr.refresh()
+
+        letters, key = editBuffer(scr, letters, True)
+
+        if key == "\n":
+            break
+
+
+    #Initialize buffers/problem instance
+    line = ""
+    chunk = getChunk(letters, chunkSize)
 
     while True:
         scr.clear()
@@ -42,24 +83,9 @@ def main(scr):
         scr.addstr(line, curses.color_pair(colorPair))
         scr.refresh()
 
-        key = ""
-
-        while len(key) != 1:
-            key = scr.getkey()
-
-            if key in kbmap.keys():
-                key = kbmap[key]
-
-            if (key == "KEY_BACKSPACE") or (len(key) == 1 and ord(key) == 127):
-                line = line[0 : len(line) - 1]
-                key = ""
-                break
-            if key == " ":
-                line = line[0 : len(line) - 1]
-                key = ""
-                break
-
-        line += key
+        line, key = editBuffer(scr, line, True)
+        if key == " ":
+            line = line[0 : len(line) - 2]
 
 
         if line == chunk:
