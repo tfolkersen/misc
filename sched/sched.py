@@ -5,6 +5,11 @@ import curses.textpad
 import json
 import signal
 import os
+import pathlib
+import sys
+
+_path = pathlib.Path(sys.argv[0]).parent.resolve()
+filePrefix = str(_path) + "/data/"
 
 def handler_SIGINT(signum, frame):
     return
@@ -12,7 +17,6 @@ def handler_SIGINT(signum, frame):
 signal.signal(signal.SIGINT, handler_SIGINT)
 
 cal = calendar.Calendar(calendar.SUNDAY)
-filePrefix = "./data/"
 dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
 def calGetMonth(year, month):
