@@ -11,7 +11,10 @@ import sys
 _path = pathlib.Path(sys.argv[0]).parent.resolve()
 filePrefix = str(_path) + "/data/"
 
-os.mkdir(filePrefix)
+try:
+    os.mkdir(filePrefix)
+except FileExistsError:
+    pass
 
 
 def handler_SIGINT(signum, frame):
