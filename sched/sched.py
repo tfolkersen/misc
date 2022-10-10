@@ -11,6 +11,9 @@ import sys
 _path = pathlib.Path(sys.argv[0]).parent.resolve()
 filePrefix = str(_path) + "/data/"
 
+os.mkdir(filePrefix)
+
+
 def handler_SIGINT(signum, frame):
     return
 
