@@ -7,6 +7,11 @@ import signal
 import os
 import pathlib
 import sys
+import ced
+import subprocess
+
+editors = ["TEXTPAD", "CED", "VIM"]
+editor = editors[0]
 
 _path = pathlib.Path(sys.argv[0]).parent.resolve()
 filePrefix = str(_path) + "/data/"
@@ -292,16 +297,32 @@ def main(scr):
 
         if key == "\n":
             #editDate(scr)
-            curses.curs_set(2)
-            scr.clear()
-            box = curses.textpad.Textbox(scr)
-            buffer = monthData["content"][cursorDate[2] - 1]
-            scr.addstr(buffer)
-            buffer = box.edit()
-            curses.curs_set(0)
-            monthData["content"][cursorDate[2] - 1] = buffer
-            saveMonth(monthData, cursorDate[0], cursorDate[1])
-            continue
+
+            if editor == "TEXTPAD":
+                curses.curs_set(2)
+                scr.clear()
+                box = curses.textpad.Textbox(scr)
+                buffer = monthData["content"][cursorDate[2] - 1]
+                scr.addstr(buffer)
+                buffer = box.edit()
+                curses.curs_set(0)
+                monthData["content"][cursorDate[2] - 1] = buffer
+                saveMonth(monthData, cursorDate[0], cursorDate[1])
+                continue
+            elif editor == "CED":
+                buffer = monthData["content"][cursorDate[2] - 1]
+                buffer = ced.edit(scr, buffer)
+                monthData["content"][cursorDate[2] - 1] = buffer
+                saveMonth(monthData, cursorDate[0], cursorDate[1])
+                continue
+            elif editor == "VIM":
+                scr.clear()
+                scr.refresh()
+                subprocess.Popen("clear")
+                cmd = f"vim {filePrefix}/temp"
+                subprocess.Popen(cmd.split())
+                continue
+
 
         newCursor = [x for x in cursorPos]
         if key == "KEY_LEFT":
